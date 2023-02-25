@@ -3,27 +3,22 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Models\Product;
 
 class ProductController extends Controller
 {
-    public static $products = [
-        ["id" => "1", "name" => "TV", "description" => "Best TV", "price" => 100],
-        ["id" => "2", "name" => "iPhone", "description" => "Best iPhone", "price" => 20],
-        ["id" => "3", "name" => "Chromecast", "description" => "Best Chromecast", "price" => 1],
-        ["id" => "4", "name" => "Glasses", "description" => "Best Glasses", "price" => 25]
-    ];
     public function index(): View
     {
         $viewData = [];
         $viewData["title"] = "Products - Online Store";
         $viewData["subtitle"] = "List of products";
-        $viewData["products"] = ProductController::$products;
+        $viewData["products"] = Product::all();
         return view('product.index')->with("viewData", $viewData);
     }
     public function show(string $id): View
     {
         $viewData = [];
-        $product = ProductController::$products[$id - 1];
+        $product = Product::findOrFail($id);
         $viewData["title"] = $product["name"] . " - Online Store";
         $viewData["subtitle"] = $product["name"] . " - Product information";
         $viewData["product"] = $product;
@@ -44,12 +39,8 @@ class ProductController extends Controller
             "name" => "required",
             "price" => "required|min_digits:0"
         ]);
-        //dd($request->all());
-        //here will be the code to call the model and save it to the database
-        return redirect('products/create')->with('status', 'created');
-        //Redirect page
-        // $status = 'created';
-        // return view('product.create')->with("status",$status);
-
+        
+        Product::create($request->only(["name","price"]));
+        return back();
     }
 }
