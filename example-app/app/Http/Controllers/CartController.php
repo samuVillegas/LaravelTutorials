@@ -61,4 +61,11 @@ class CartController extends Controller
 
         return back();
     }
+
+    public function remove(string $id, Request $request): RedirectResponse
+    {
+        $request->session()->forget('cart_product_data');
+
+        return back();
+    }
 }
